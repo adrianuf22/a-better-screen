@@ -1,0 +1,23 @@
+#! /bin/bash
+
+deviceName=$(xrandr | grep ' connected ' | awk '{ print $1 }')
+echo "Device found: $deviceName"
+#modeName="$1x$2_"$(LANG=C printf "%0.2f" $3)
+
+vesaCalc=$(cvt $1 $2 $3 | grep Modeline)
+
+#cvt $1 $2 $3 | grep Modeline | awk '{ print $2"  "$3"  "$4" "$5" "$6" "$7"  "$8" "$9" "$10" "$11" "$12" "$13 }'
+modeName=$(echo $vesaCalc | awk '{ print $2 }')
+
+echo "New mode: $modeName"
+
+#xrandr --newmode $(cvt $1 $2 $3 | grep Modeline | awk '{ print $2"  "$3"  "$4" "$5" "$6" "$7"  "$8" "$9" "$10" "$11" "$12" "$13 }')
+
+xrandr --newmode $(echo $vesaCalc | awk '{ print $2"  "$3"  "$4" "$5" "$6" "$7"  "$8" "$9" "$10" "$11" "$12" "$13 }')
+xrandr --addmode $deviceName $modeName
+
+echo "$modeName ready to apply!"
+
+xrandr --dpi 192 --output $deviceName --mode $modeName
+
+echo "Enjoy the new resolution!"
