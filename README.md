@@ -12,6 +12,10 @@ This scripts could be moved to main **bin** directory enable execution from any 
 
 To keep configurations after restart, edit the file `a-better-screen.desktop` at `resources` directory, setting up the values and scripts that you would like to exec after restart at the `Exec` param of this file and run the script `autostart.sh` to configure.
 
+![image](https://user-images.githubusercontent.com/721525/88596480-8f0f1680-d03b-11ea-8841-9eaff4cf9293.png)
+
+Reference: [Desktop Application Autostart Specification](https://developer.gnome.org/autostart-spec/)
+
 ## Custom Resolution
 
 Change your screen resolution to a custom resolution (even its is higher or lower than vendor specification).
