@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /bin/sh
 
 deviceName=$(xrandr | grep ' connected ' | awk '{ print $1 }')
 echo "Device found: $deviceName"
