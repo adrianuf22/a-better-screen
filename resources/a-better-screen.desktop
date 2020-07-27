@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=A Better Screen
+NoDisplay=true
+Terminal=false
+Exec=bash -c "chres 1600 900 ; notify-send 'A better screen to healthy (or not) eyes' ; sleep 1 ; chcolor"
+X-GNOME-Autostart-enabled=true
+X-GNOME-Autostart-Delay=1
