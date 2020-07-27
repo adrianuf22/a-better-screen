@@ -1,0 +1,30 @@
+#! /bin/sh
+
+_color_controller=$(which redshift)
+if [ ! $? -eq 0 ]; then
+    echo "Please, install Redshift before, aborting..."
+    exit 1
+fi
+
+change_color()
+{
+    r=${1}
+    g=${2:-$r}
+    b=${3:-$r}
+    t=${4:-3500}
+
+    $_color_controller -PO $t -g $r:$g:$b
+}
+
+case $1 in
+    --no-blue)
+        change_color 2 .1 .1
+        ;; 
+    --less-blue)
+        change_color .9 .6 .5
+        ;;
+    --cold-red)
+    *)
+        change_color .9 .7 .5 5500
+        ;;
+esac
