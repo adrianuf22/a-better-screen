@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 
 width=$1
 height=$2
@@ -13,6 +13,10 @@ while [ $# -gt 0 ]; do
                 ;;
             --rotate)
                 rotate=$2
+                ;;
+            --output)
+                output=$2
+                ;;
         esac
     fi
 
@@ -24,22 +28,30 @@ printMessage() {
     echo $1
 }
 
-createResolution() {
-    vesaModeLine=$(cvt $width $height | grep Modeline | sed 's/Modeline //;s/_[0-9\.]*//;s/"//g')
-    printMessage "$vesaModeLine"
-
-    xrandr --newmode $vesaModeLine
-
-    modeName=$(echo $vesaModeLine | awk '{ print $1 }')
-    xrandr --addmode $output $modeName && printMessage "Resolution $modeName created!"
-}
-
 output=$(xrandr | grep ' connected ' | awk '{ print $1 }')
+
+if [ $(echo $output | wc -w) -gt 1 ]; then
+    PS3="Select the output to apply the resolution:"
+    options=$output
+    select output in $options
+    do
+        break
+    done
+fi
+
 printMessage "Device: $output"
 
-createResolution
+vesaModeLine=$(cvt $width $height | grep Modeline | sed 's/Modeline //;s/_[0-9\.]*//;s/"//g')
+printMessage "$vesaModeLine"
+
+newmodeError=$(xrandr --newmode $vesaModeLine 2>&1)
+printMessage $newmodeError
+
+modeName=$(echo $vesaModeLine | awk '{ print $1 }')
+xrandr --addmode $output $modeName && printMessage "Resolution $modeName created!"
+
 if [ $? != '0' ]; then
     exit $?
 fi
 
-xrandr --dpi 192 --output $output --mode $modeName --pos $position --rotate $rotate && printMessage "Applied!!!"
+xrandr --nograb --output $output --mode $modeName --pos $position --rotate $rotate && printMessage "Applied!!!"
