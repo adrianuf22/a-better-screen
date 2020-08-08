@@ -2,6 +2,22 @@
 
 width=$1
 height=$2
+position=${position-0x0}
+rotate=${rotate-normal}
+
+while [ $# -gt 0 ]; do
+    if [ -z "${1##*--*}" ]; then
+        case $1 in
+            --position)
+                position=$2
+                ;;
+            --rotate)
+                rotate=$2
+        esac
+    fi
+
+    shift
+done
 
 printMessage() {
     # @Todo: Add debug flag to supress echo
@@ -26,4 +42,4 @@ if [ $? != '0' ]; then
     exit $?
 fi
 
-xrandr --dpi 192 --output $output --mode $modeName && printMessage "Applied!!!"
+xrandr --dpi 192 --output $output --mode $modeName --pos $position --rotate $rotate && printMessage "Applied!!!"
