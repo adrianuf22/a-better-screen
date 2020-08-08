@@ -1,23 +1,29 @@
 #! /bin/sh
 
-deviceName=$(xrandr | grep ' connected ' | awk '{ print $1 }')
-echo "Device found: $deviceName"
-#modeName="$1x$2_"$(LANG=C printf "%0.2f" $3)
+width=$1
+height=$2
 
-vesaCalc=$(cvt $1 $2 $3 | grep Modeline)
+printMessage() {
+    # @Todo: Add debug flag to supress echo
+    echo $1
+}
 
-#cvt $1 $2 $3 | grep Modeline | awk '{ print $2"  "$3"  "$4" "$5" "$6" "$7"  "$8" "$9" "$10" "$11" "$12" "$13 }'
-modeName=$(echo $vesaCalc | awk '{ print $2 }')
+createResolution() {
+    vesaModeLine=$(cvt $width $height | grep Modeline | sed 's/Modeline //;s/_[0-9\.]*//;s/"//g')
+    printMessage "$vesaModeLine"
 
-echo "New mode: $modeName"
+    xrandr --newmode $vesaModeLine
 
-#xrandr --newmode $(cvt $1 $2 $3 | grep Modeline | awk '{ print $2"  "$3"  "$4" "$5" "$6" "$7"  "$8" "$9" "$10" "$11" "$12" "$13 }')
+    modeName=$(echo $vesaModeLine | awk '{ print $1 }')
+    xrandr --addmode $output $modeName && printMessage "Resolution $modeName created!"
+}
 
-xrandr --newmode $(echo $vesaCalc | awk '{ print $2"  "$3"  "$4" "$5" "$6" "$7"  "$8" "$9" "$10" "$11" "$12" "$13 }')
-xrandr --addmode $deviceName $modeName
+output=$(xrandr | grep ' connected ' | awk '{ print $1 }')
+printMessage "Device: $output"
 
-echo "$modeName ready to apply!"
+createResolution
+if [ $? != '0' ]; then
+    exit $?
+fi
 
-xrandr --dpi 192 --output $deviceName --mode $modeName
-
-echo "Enjoy the new resolution!"
+xrandr --dpi 192 --output $output --mode $modeName && printMessage "Applied!!!"
