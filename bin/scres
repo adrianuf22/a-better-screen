@@ -1,0 +1,16 @@
+#! /bin/bash
+
+newWidth=$1
+newHeight=$2
+
+currentRes=$(xrandr | grep \* | cut -d' ' -f4)
+
+currentWidth=$(echo $currentRes | tr 'x' ' ' | awk '{print $1}')
+currentHeight=$(echo $currentRes | tr 'x' ' ' | awk '{print $2}')
+
+scaleX=$(echo "$newWidth / $currentWidth" | bc -l)
+scaleY=$(echo "$newHeight / $currentHeight" | bc -l)
+
+xrandr --output HDMI-1 --mode $currentRes --panning ${newWidth}x${newHeight} --scale ${scaleX}x${scaleY}
+
+echo "Enjoy the scaled resolution!"

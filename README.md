@@ -2,6 +2,16 @@
 
 This repository has some scripts to change screen configurations - to better (or not) - tested by me along of the last months and without any warranty - use by your own risk.
 
+## NEWS
+
+- Added `scres` script to enable XRANDR with Samsung panels or another panels with resolution locked at optimal resolutions (The native maximum resolution). This script uses `--panning` and `--scale` arguments to zooming the image size and scaling to correct size.
+
+### How to use
+
+````
+$ ./bin/scres [width] [height]
+````
+
 ## Motivation
 My Acer laptop has a good hardware except by the monitor screen, still an HD (1366x768) screen :(, so, using CVT and XRANDR I could change the resolution to 1600x900 (Great) or 1920x1080 (Not good).
 
