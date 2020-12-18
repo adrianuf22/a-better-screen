@@ -11,6 +11,19 @@ currentHeight=$(echo $currentRes | tr 'x' ' ' | awk '{print $2}')
 scaleX=$(echo "$newWidth / $currentWidth" | bc -l)
 scaleY=$(echo "$newHeight / $currentHeight" | bc -l)
 
+echo "Text scaling factor: $scaleX"
+
 xrandr --output HDMI-1 --mode $currentRes --panning ${newWidth}x${newHeight} --scale ${scaleX}x${scaleY}
+
+gnomeSettings=$(which gsettings)
+
+if [ $? -eq 0 ]; then
+	curScalingFactor=$($gnomeSettings get org.gnome.desktop.interface text-scaling-factor)
+	fontAlreadyScaled=$(echo "$curScalingFactor == $scaleX" | bc)
+	
+	if [ $fontAlreadyScaled -eq "0" ]; then
+		$gnomeSettings set org.gnome.desktop.interface text-scaling-factor $scaleX
+	fi
+fi
 
 echo "Enjoy the scaled resolution!"
