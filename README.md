@@ -2,6 +2,14 @@
 
 This repository has some scripts to change screen configurations - to better (or not) - tested by me along of the last months and without any warranty - use by your own risk.
 
+<<<<<<< HEAD
+=======
+## NEWS
+- [2020/12] At `scres` script: Added font size adjustment using the same scale applied to the `--panning`, increasing the quality of text and enabling higher resolutions. Improved experience with full hd resolution on small screens. Tested on 27" Samsung panels (Native FullHD) at 2550x1440
+
+- [2020/11] Added `scres` script to enable XRANDR with Samsung panels or another panels with resolution locked at optimal resolutions (The native maximum resolution). This script uses `--panning` and `--scale` arguments to zooming the image size and scaling to correct size.
+
+>>>>>>> 74bc560d19963d000a27dc5babe22fc33b44d5ef
 ### How to use
 
 ````
