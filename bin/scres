@@ -1,29 +1,27 @@
 #! /bin/bash
 
-newWidth=$1
-newHeight=$2
+set -e
 
-currentRes=$(xrandr | grep \* | cut -d' ' -f4)
+source ./font_scaling
+source ./output_resolution
+source ./print_message
 
-currentWidth=$(echo $currentRes | tr 'x' ' ' | awk '{print $1}')
-currentHeight=$(echo $currentRes | tr 'x' ' ' | awk '{print $2}')
+scaleResolution() {
+	width=$1
+    height=$2
+    output=$3
+	opts=$4
+	currentRes=$(currentResolution $output) 
+	currentWidth=$(currentWidth $output)
+	currentHeight=$(currentHeight $output)
+	scaleX=$(echo "$width / $currentWidth" | bc -l)
+	scaleY=$(echo "$height / $currentHeight" | bc -l)
 
-scaleX=$(echo "$newWidth / $currentWidth" | bc -l)
-scaleY=$(echo "$newHeight / $currentHeight" | bc -l)
+	printMessage "Original resolution: $currentRes"
 
-echo "Text scaling factor: $scaleX"
+	xrandr --output $output --mode $currentRes --panning ${width}x${height} --scale ${scaleX}x${scaleY} $opts
 
-xrandr --output HDMI-1 --mode $currentRes --panning ${newWidth}x${newHeight} --scale ${scaleX}x${scaleY}
+	fontScaling $width $currentWidth
 
-gnomeSettings=$(which gsettings)
-
-if [ $? -eq 0 ]; then
-	curScalingFactor=$($gnomeSettings get org.gnome.desktop.interface text-scaling-factor)
-	fontAlreadyScaled=$(echo "$curScalingFactor == $scaleX" | bc)
-	
-	if [ $fontAlreadyScaled -eq "0" ]; then
-		$gnomeSettings set org.gnome.desktop.interface text-scaling-factor $scaleX
-	fi
-fi
-
-echo "Enjoy the scaled resolution!"
+	printMessage "Enjoy the scaled resolution!"
+}

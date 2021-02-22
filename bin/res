@@ -1,0 +1,58 @@
+#! /bin/bash
+
+# set -euo pipefail;
+
+source ./chres
+source ./scres
+source ./print_message
+
+width=$1
+height=$2
+quiet=1
+new=1
+opts=
+
+while [ $# -gt 0 ]; do
+    if [ -z "${1##*--*}" ]; then
+        case $1 in
+            --output)
+                output=$2
+                ;;
+            --quiet)
+                quiet=0
+                ;;
+            --new)
+                new=0
+                ;;
+            *)
+                opts="${opts} ${1} ${2}"
+                ;;
+        esac
+    fi
+
+    shift
+done
+
+export _RES_QUIET=$quiet
+
+if [ -z $output ]; then
+    output=$(xrandr | grep ' connected ' | awk '{ print $1 }')
+fi
+
+if [ $(echo $output | wc -w) -gt 1 ]; then
+    PS3="Select the output to apply the resolution:"
+    options=$output
+    select output in $options
+    do
+        break
+    done
+fi
+
+printMessage "Device: $output"
+
+if [ $new -eq 0 ]; then
+    changeResolution $width $height $output "$opts"
+    exit 0
+fi
+
+scaleResolution $width $height $output "$opts"

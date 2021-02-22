@@ -1,57 +1,32 @@
 #! /bin/bash
 
-width=$1
-height=$2
-position=${position-0x0}
-rotate=${rotate-normal}
+source ./font_scaling
+source ./output_resolution
+source ./print_message
+source ./create_res
 
-while [ $# -gt 0 ]; do
-    if [ -z "${1##*--*}" ]; then
-        case $1 in
-            --position)
-                position=$2
-                ;;
-            --rotate)
-                rotate=$2
-                ;;
-            --output)
-                output=$2
-                ;;
-        esac
-    fi
+changeResolution() {
+    width=$1
+    height=$2
+    output=$3
+    opts=$4
+    currentWidth=$(currentWidth $output)
+    currentHeight=$(currentHeight $output)
 
-    shift
-done
+    printMessage "Original resolution: ${currentWidth}x${currentHeight}"
 
-printMessage() {
-    # @Todo: Add debug flag to supress echo
-    echo $1
+    vesaModeLine=$(calcVesaModeLine $width $height)
+    printMessage "Modeline: $vesaModeLine"
+
+    scaleX=$(echo "$width / $currentWidth" | bc -l)
+	scaleY=$(echo "$height / $currentHeight" | bc -l)
+
+    modeName=$(echo $vesaModeLine | awk '{ print $1 }')
+    xrandr --addmode $output $modeName && printMessage "Resolution $modeName created!"
+
+    xrandr --output $output --mode $modeName --scale ${scaleX}x${scaleY} $opts
+
+    fontScaling $width $currentWidth
+
+    printMessage "Enjoy the new resolution!!!"
 }
-
-output=$(xrandr | grep ' connected ' | awk '{ print $1 }')
-
-if [ $(echo $output | wc -w) -gt 1 ]; then
-    PS3="Select the output to apply the resolution:"
-    options=$output
-    select output in $options
-    do
-        break
-    done
-fi
-
-printMessage "Device: $output"
-
-vesaModeLine=$(cvt $width $height | grep Modeline | sed 's/Modeline //;s/_[0-9\.]*//;s/"//g')
-printMessage "$vesaModeLine"
-
-newmodeError=$(xrandr --newmode $vesaModeLine 2>&1)
-printMessage $newmodeError
-
-modeName=$(echo $vesaModeLine | awk '{ print $1 }')
-xrandr --addmode $output $modeName && printMessage "Resolution $modeName created!"
-
-if [ $? != '0' ]; then
-    exit $?
-fi
-
-xrandr --nograb --output $output --mode $modeName --pos $position --rotate $rotate && printMessage "Applied!!!"
