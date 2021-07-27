@@ -1,8 +1,0 @@
-#! /bin/bash
-
-printMessage() {
-    set -euo pipefail;
-
-    # ToDo: quiet
-    echo $1
-}
